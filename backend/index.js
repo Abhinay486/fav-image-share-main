@@ -13,9 +13,8 @@ const port = process.env.PORT || 5000;
 
 // Enable CORS for your frontend
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true,
+  origin: "https://turbo-guacamole-wpwgrw5qjp5hggpp-5173.app.github.dev",
+  credentials: true
 }));
 
 // Middleware
@@ -32,7 +31,7 @@ app.use("/api/pin", pinRoutes);
 // Serve frontend
 
 // Start server
-app.listen(port, async () => {
+app.listen(port,'0.0.0.0', async () => {
     console.log(`Server running on port ${port}`);
     await connectDb();
 });

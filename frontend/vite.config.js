@@ -17,7 +17,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://fav-image-share.onrender.com", // Your backend
+        target: "https://turbo-guacamole-wpwgrw5qjp5hggpp-5000.app.github.dev", // Your backend
         changeOrigin: true,
         secure: false,
       },
