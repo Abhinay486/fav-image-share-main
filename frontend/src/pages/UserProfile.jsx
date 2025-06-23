@@ -4,7 +4,6 @@ import { Link, useParams } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 import { UserData } from "../context/UserContext";
 import Followersing from "./Followersing";
-import { PinData } from "../context/PinContext";
 
 const UserProfile = ({ user: loggedInUser }) => {
   const { id } = useParams();

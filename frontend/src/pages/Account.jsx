@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { logOut } from "../../../backend/controllers/userControllers";
 import { FaUserCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";

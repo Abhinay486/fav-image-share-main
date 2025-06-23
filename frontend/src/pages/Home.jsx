@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { PinData } from "../context/PinContext";
-import LoadingAnimationpage from "../components/Loading";
 import { Search, Grid, Filter, Link } from 'lucide-react';
 
 const LoadingAnimation = () => (
