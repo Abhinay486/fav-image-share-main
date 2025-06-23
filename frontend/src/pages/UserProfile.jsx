@@ -1,9 +1,15 @@
-import axios from "axios";
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 import { UserData } from "../context/UserContext";
 import Followersing from "./Followersing";
+
+// Pre-configured axios instance
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  withCredentials: true,
+});
 
 const UserProfile = ({ user: loggedInUser }) => {
   const { id } = useParams();
@@ -12,17 +18,17 @@ const UserProfile = ({ user: loggedInUser }) => {
   const [error, setError] = useState(null);
   const [followed, setFollowed] = useState(false);
   const [showFollowersing, setShowFollowersing] = useState(false);
-  const { pin, followUser, fetchPin } = UserData();
- 
-useEffect(() => {
+  const { followUser } = UserData();
+
+  useEffect(() => {
     if (!id) return;
 
     const fetchUser = async () => {
       try {
         setLoading(true);
-        const { data } = await axios.get(`/api/user/${id}`);
+        const { data } = await api.get(`/api/user/${id}`);
         setUser(data);
-        setFollowed(data?.followers?.includes(loggedInUser?._id) || false);
+        setFollowed(data.followers?.includes(loggedInUser?._id) || false);
       } catch (err) {
         setError("Failed to load user data.");
         console.error(err);
@@ -32,7 +38,6 @@ useEffect(() => {
     };
 
     fetchUser();
-     
   }, [id, loggedInUser?._id]);
 
   const followHandler = async () => {
@@ -40,15 +45,11 @@ useEffect(() => {
 
     try {
       await followUser(user._id, () => {
-        setUser((prevUser) => {
+        setUser((prev) => {
           const updatedFollowers = followed
-            ? prevUser.followers.filter((f) => f !== loggedInUser._id)
-            : [...prevUser.followers, loggedInUser._id];
-
-          return {
-            ...prevUser,
-            followers: updatedFollowers,
-          };
+            ? prev.followers.filter((f) => f !== loggedInUser._id)
+            : [...prev.followers, loggedInUser._id];
+          return { ...prev, followers: updatedFollowers };
         });
         setFollowed(!followed);
       });
@@ -71,8 +72,12 @@ useEffect(() => {
 
         {user ? (
           <>
-            <h1 className="text-2xl font-bold text-gray-800">{user.name}</h1>
-            <p className="text-gray-600 text-sm mt-1">{user.email}</p>
+            <h1 className="text-2xl font-bold text-gray-800">
+              {user.name}
+            </h1>
+            <p className="text-gray-600 text-sm mt-1">
+              {user.email}
+            </p>
           </>
         ) : (
           <p className="text-gray-500">User not found.</p>
@@ -116,7 +121,7 @@ useEffect(() => {
         onClick={followHandler}
       >
         {followed ? "Unfollow" : "Follow"}
-      </button> 
+      </button>
     </div>
   );
 };
