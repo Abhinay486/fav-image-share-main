@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { logOut } from "../../../backend/controllers/userControllers";
 import { FaUserCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -7,20 +6,26 @@ import axios from "axios";
 import { UserData } from "../context/UserContext";
 import Followersing from "./Followersing";
 
+// create a pre-configured axios instance here
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  withCredentials: true,
+});
+
 const Account = ({ user }) => {
-      const [showFollowersing, setShowFollowersing] = useState(false);
-    
-    const navigate = useNavigate();
-    const {setIsAuth, setUser} = UserData();
-  const logOutHand = async() => {
+  const [showFollowersing, setShowFollowersing] = useState(false);
+  const navigate = useNavigate();
+  const { setIsAuth, setUser } = UserData();
+
+  const logOutHand = async () => {
     try {
-        const {data} = await axios.get("api/user/logout");
-        toast.success(data.message);
-        navigate("/login");
-        setIsAuth(false);
-        setUser([])
+      const { data } = await api.get("/api/user/logout");
+      toast.success(data.message);
+      navigate("/login");
+      setIsAuth(false);
+      setUser(null);
     } catch (error) {
-        toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || error.message);
     }
   };
 

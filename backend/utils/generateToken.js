@@ -6,10 +6,10 @@ const generateToken = (id, res) => {
     });
 
     res.cookie("token", token, {
-        maxAge: 15 * 24 * 60 * 60 * 1000, // Convert days to milliseconds
-        httpOnly: true, // Prevent client-side access
-        sameSite: "strict", // Prevent CSRF attacks
-        secure: process.env.NODE_ENV === "production", // Secure cookie in production
+        maxAge: 15 * 24 * 60 * 60 * 1000, 
+        httpOnly: true,                
+        secure: true,                    
+        sameSite: "None",                
     });
 };
 

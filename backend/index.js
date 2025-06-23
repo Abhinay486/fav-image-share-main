@@ -9,13 +9,12 @@ import cors from 'cors';
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT ;
 
 // Enable CORS for your frontend
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true,
+  origin: process.env.FRONTEND_URL,
+  credentials: true
 }));
 
 // Middleware
