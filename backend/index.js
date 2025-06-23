@@ -9,11 +9,11 @@ import cors from 'cors';
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT ;
 
 // Enable CORS for your frontend
 app.use(cors({
-  origin: "https://turbo-guacamole-wpwgrw5qjp5hggpp-5173.app.github.dev",
+  origin: process.env.FRONTEND_URL,
   credentials: true
 }));
 
@@ -31,7 +31,7 @@ app.use("/api/pin", pinRoutes);
 // Serve frontend
 
 // Start server
-app.listen(port,'0.0.0.0', async () => {
+app.listen(port, async () => {
     console.log(`Server running on port ${port}`);
     await connectDb();
 });
