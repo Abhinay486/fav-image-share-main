@@ -16,7 +16,7 @@ app.use(cors({
   origin: process.env.FRONTEND_URL,
   credentials: true
 }));
-
+console.log(`CORS enabled for ${process.env.FRONTEND_URL}`);
 // Middleware
 app.use(express.json());
 app.use(cookieParser());

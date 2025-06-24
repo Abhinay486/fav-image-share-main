@@ -75,8 +75,16 @@ const PinPage = ({ user }) => {
                 {pin.image && (
                   <>
                     <img
-                      src={pin.image.url}
+                      src={
+                        pin.image?.url
+                          ? pin.image.url.replace('/upload/', '/upload/f_auto,q_auto/')
+                          : pin.image
+                      }
                       alt=""
+                      loading="lazy"
+                      decoding="async"
+                      width={400}
+                      height={256}
                       className="object-cover w-full rounded-t-lg md:rounded-l-lg md:rounded-t-none"
                     />
                     <button

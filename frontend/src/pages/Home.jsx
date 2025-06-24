@@ -18,8 +18,16 @@ const PinCard = ({ pin, index }) => (
     {/* Image container */}
     <div className="relative overflow-hidden">
       <img 
-        src={pin.image?.url || pin.image} 
+        src={
+          pin.image?.url
+            ? pin.image.url.replace('/upload/', '/upload/f_auto,q_auto/')
+            : pin.image
+        }
         alt={pin.title}
+        loading="lazy"
+        decoding="async"
+        width={400}
+        height={256}
         className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
       />
       
