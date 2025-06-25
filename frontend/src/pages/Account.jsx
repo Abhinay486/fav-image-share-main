@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -12,37 +12,10 @@ const api = axios.create({
   withCredentials: true,
 });
 
-const CACHE_KEY = "accountUser";
-const CACHE_EXPIRE = 3600 * 1000; // 1 hour
-
 const Account = ({ user }) => {
   const [showFollowersing, setShowFollowersing] = useState(false);
-  const [cachedUser, setCachedUser] = useState(user);
   const navigate = useNavigate();
   const { setIsAuth, setUser } = UserData();
-
-  // Cache user data on mount or when user changes
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem(
-        CACHE_KEY,
-        JSON.stringify({ data: user, timestamp: Date.now() })
-      );
-      setCachedUser(user);
-    } else {
-      // Try to load from cache if user is not provided
-      const cached = localStorage.getItem(CACHE_KEY);
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        const isExpired = Date.now() - parsed.timestamp > CACHE_EXPIRE;
-        if (!isExpired) {
-          setCachedUser(parsed.data);
-        } else {
-          localStorage.removeItem(CACHE_KEY);
-        }
-      }
-    }
-  }, [user]);
 
   const logOutHand = async () => {
     try {
@@ -51,13 +24,10 @@ const Account = ({ user }) => {
       navigate("/login");
       setIsAuth(false);
       setUser(null);
-      localStorage.removeItem(CACHE_KEY); // Clear cache on logout
     } catch (error) {
       toast.error(error.response?.data?.message || error.message);
     }
   };
-
-  if (!cachedUser) return null; // or a loading state
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-100">
@@ -68,8 +38,8 @@ const Account = ({ user }) => {
         </div>
 
         {/* User Info */}
-        <h1 className="text-2xl font-bold text-gray-800">{cachedUser.name}</h1>
-        <p className="text-gray-600 text-sm mt-1">{cachedUser.email}</p>
+        <h1 className="text-2xl font-bold text-gray-800">{user.name}</h1>
+        <p className="text-gray-600 text-sm mt-1">{user.email}</p>
 
         {/* Logout Button */}
         <button
@@ -80,9 +50,9 @@ const Account = ({ user }) => {
         </button>
       </div>
       <div className="flex gap-3 m-2 mt-3 items-center">
-        <p>{cachedUser?.followers?.length || 0} followers</p>
+        <p>{user?.followers?.length || 0} followers</p>
         <p>|</p>
-        <p>{cachedUser?.following?.length || 0} following</p>
+        <p>{user?.following?.length || 0} following</p>
 
         <div className="flex flex-col items-center relative">
           <button
@@ -98,9 +68,9 @@ const Account = ({ user }) => {
 
           {showFollowersing && (
             <Followersing
-              user={cachedUser}
-              followers={cachedUser.followers}
-              following={cachedUser.following}
+              user={user}
+              followers={user.followers}
+              following={user.following}
               onClose={() => setShowFollowersing(false)}
             />
           )}

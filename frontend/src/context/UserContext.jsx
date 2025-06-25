@@ -7,29 +7,11 @@ const api = axios.create({
   withCredentials: true,
 });
 
-const CACHE_USER_KEY = "userData";
-const CACHE_EXPIRE = 3600 * 1000; // 1 hour
-
-function getCache(key) {
-  const cached = localStorage.getItem(key);
-  if (cached) {
-    const parsed = JSON.parse(cached);
-    const isExpired = Date.now() - parsed.timestamp > CACHE_EXPIRE;
-    if (!isExpired) return parsed.data;
-    localStorage.removeItem(key);
-  }
-  return null;
-}
-
-function setCache(key, data) {
-  localStorage.setItem(key, JSON.stringify({ data, timestamp: Date.now() }));
-}
-
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(() => getCache(CACHE_USER_KEY));
-  const [isAuth, setIsAuth] = useState(!!getCache(CACHE_USER_KEY));
+  const [user, setUser] = useState(null);
+  const [isAuth, setIsAuth] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -40,7 +22,6 @@ export const UserProvider = ({ children }) => {
       const { data } = await api.post("/api/user/register", { name, email, password });
       setUser(data.user);
       setIsAuth(true);
-      setCache(CACHE_USER_KEY, data.user);
       toast.success("Registration successful!");
       navigate("/");
       fetchPins();
@@ -58,7 +39,6 @@ export const UserProvider = ({ children }) => {
       const { data } = await api.post("/api/user/login", { email, password });
       setUser(data.user);
       setIsAuth(true);
-      setCache(CACHE_USER_KEY, data.user);
       toast.success("Login successful!");
       navigate("/");
       fetchPins();
@@ -71,19 +51,10 @@ export const UserProvider = ({ children }) => {
 
   // fetch current user
   async function fetchUser() {
-    // Try cache first
-    const cached = getCache(CACHE_USER_KEY);
-    if (cached) {
-      setUser(cached);
-      setIsAuth(true);
-      setLoading(false);
-      return;
-    }
     try {
       const { data } = await api.get("/api/user/me");
       setUser(data.user || data);
       setIsAuth(true);
-      setCache(CACHE_USER_KEY, data.user || data);
     } catch (error) {
       console.error("Fetch user failed:", error);
     } finally {
@@ -96,7 +67,6 @@ export const UserProvider = ({ children }) => {
     try {
       const { data } = await api.post(`/api/user/follow/${id}`);
       toast.success(data.message);
-      localStorage.removeItem(CACHE_USER_KEY); // Invalidate cache
       refreshUser();
     } catch (error) {
       toast.error(error.response?.data?.message || error.message);
@@ -117,11 +87,7 @@ export const UserProvider = ({ children }) => {
         isAuth,
         loading,
         btnLoading,
-        setUser: (u) => {
-          setUser(u);
-          if (u) setCache(CACHE_USER_KEY, u);
-          else localStorage.removeItem(CACHE_USER_KEY);
-        },
+        setUser,
         setIsAuth,
       }}
     >
